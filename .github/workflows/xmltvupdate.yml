@@ -1,0 +1,37 @@
+name: Atualizar EPG
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'  # Executa a cada 2 horas
+  push:
+    branches:
+      - main
+
+jobs:
+  update-epg:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run script
+      run: python xmltvupdate.py
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add epg.xml
+        git commit -m 'Atualização automática do EPG'
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
