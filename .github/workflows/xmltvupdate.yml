@@ -1,14 +1,14 @@
-name: Atualizar EPG
+name: Atualizar XMLTV
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # Executa a cada 2 horas
+    - cron: '0 * * * *' # Executa a cada hora
   push:
     branches:
       - main
 
 jobs:
-  update-epg:
+  update-xmltv:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,20 +18,19 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.9'
+
+    - name: Verify Python version
+      run: python --version
 
     - name: Install dependencies
-      run: pip install requests
-
-    - name: Run script
-      run: python xmltvupdate.py
-
-    - name: Commit and push changes
       run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add epg.xml
-        git commit -m 'Atualização automática do EPG'
-        git push
+        python -m pip install --upgrade pip
+
+    - name: List files in directory
+      run: ls -R
+
+    - name: Run update script
+      run: python xmltvupdate.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
